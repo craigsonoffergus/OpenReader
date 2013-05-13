@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
+{% block bodyclass %}index{% endblock %}
+
 {% block content %}
-<h1>WHAT WHAT</h1>
-<a href="{% url 'openid-login' %}">Login Here</a>
+<div class="content-bubble">
+	<h1>The Open Reader</h1>
+	<a href="{% url 'openid-login' %}" class="btn btn-large">Login Here</a>
+</div>
 {% endblock %}

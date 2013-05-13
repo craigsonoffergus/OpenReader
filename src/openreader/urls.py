@@ -20,10 +20,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^reader/', include(readerpatterns, 'reader/', 'reader')),
     
-    url(r'^login/$', oauth_views.login_begin, name='openid-login'),
-    url(r'^login-complete/$', oauth_views.login_complete, name='openid-complete'),
+    url(r'^completelogin/$', oauth_views.login_complete, name='openid-complete'),
     url(r'^loginfailed/$', TemplateView.as_view(template_name='loginfailure.html')),
-    url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/reader/',}, name='logout'),
+    url(r'^login', oauth_views.login_begin, name='openid-login'),
+    url(r'^logout', 'django.contrib.auth.views.logout', {'next_page': '/reader/',}, name='logout'),
     url(r'^',  lambda x: HttpResponseRedirect('/reader/')),
 )
 

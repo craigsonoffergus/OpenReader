@@ -1,0 +1,39 @@
+body {
+	font-family: 'Noto Sans', sans-serif;
+	background-color:#f0f0f0;
+	font-size: 18px;
+	line-height: 26px;
+}
+h1, h2, h3, h4 {
+	font-family: 'Lato', sans-serif;;
+}
+h2 {
+	font-size:27px;
+	line-height:40px;
+	font-weight:300;
+}
+h3 {
+	font-size: 24.5px;
+	margin-bottom: 15px;
+	font-weight:700;
+}
+
+
+.content-bubble {
+	background-color: #fff;
+	padding: 40px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	box-shadow: 3px 3px 3px #ccc;
+	display:inline-block;
+}
+.index {
+	text-align:center;
+}
+.index .content-bubble {
+	margin-top:200px;
+	margin-bottom:200px;
+}
+.index .content-bubble h1 {
+	margin-bottom:50px;
+}
