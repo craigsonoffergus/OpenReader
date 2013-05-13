@@ -1,0 +1,8 @@
+{% for feed in feeds %}
+	<div class="feed" data-feedkey="{{ feed.key }}">
+		<div class="feed-label">
+		{{ feed.name }}
+		</div>
+		<button type="button" class="close">&times;</button>
+	</div>
+{% endfor %}

@@ -14,11 +14,10 @@ class Base(models.Model):
     
     
     def save(self):
-        self.name = self.name.title()
         if not self.key:
             for _ in range(10):
                 key = key_generator(7)
-                if not type(self).objects.count(key == key):
+                if not type(self).objects.filter(key = key).count():
                     self.key = key
                     break
         super(Base, self).save()
@@ -28,18 +27,17 @@ class Base(models.Model):
 
 
 class Feed(Base):
-    url = models.CharField(max_length=256, blank = False)
+    url = models.CharField(max_length=256, blank = False, unique = True)
     name = models.CharField(max_length=256, blank = True)
     link = models.CharField(max_length=256, blank = True)
     description = models.CharField(max_length=256, blank = True)
     last_read = models.DateTimeField()
     regular_update_time = models.TimeField(null = True, blank = True)
-    feed_last_modified = models.DateTimeField(null = True, blank = True)
+    feed_last_modified = models.CharField(max_length=256, blank = True)
     feed_etag = models.CharField(max_length=256, blank = True)
     users = models.ManyToManyField(User, related_name="feeds")
 
-class FeedItemToUser(models.Model):
-    is_read = models.BooleanField()
+class ReadFeedItem(models.Model):
     user = models.ForeignKey(User)
     feed_item = models.ForeignKey('FeedItem')
 
@@ -49,4 +47,9 @@ class FeedItem(Base):
     link = models.CharField(max_length=256)
     content = models.TextField()
     date = models.DateTimeField()
-    users = models.ManyToManyField(User, through=FeedItemToUser, related_name="feed_items")
+    author = models.CharField(max_length=64)
+    remote_feed_id = models.CharField(max_length=50)
+    read_by_users = models.ManyToManyField(User, through=ReadFeedItem, related_name="read_feed_items")
+    
+    def to_dict(self):
+        return dict(title = self.title, link = self.link, content = self.content, author = self.author, date = self.date.isoformat())

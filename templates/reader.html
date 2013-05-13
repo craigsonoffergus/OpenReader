@@ -1,5 +1,60 @@
 {% extends "base.html" %}
 
+{% block htmlclass %}reader{% endblock %}
+{% block bodyclass %}reader{% endblock %}
+{% block pagename %}reader{% endblock %}
+
+
 {% block content %}
-<h1>You been logged in. boyyeeee.</h1>
+<div class="add-area" id="add-area">
+	<button class="btn add-button btn-warning" id="add-button"><i class="icon-book icon-white"></i> Add Feed</button>
+	<div id="add-form-wrapper" class="popover bottom">
+		<button type="button" class="close">&times;</button>
+		<form id="add-form" action="{% url 'reader:add_feed' %}" method="post">
+			{% csrf_token %}
+			{% for hidden in form.hidden_fields %}
+			    {{ hidden }}
+		    {% endfor %}
+		    {% for field in form.visible_fields %}
+		        <div class="field-wrapper">
+		            {{ field.label_tag }}
+		            {{ field }}
+		        </div>
+		    {% endfor %}
+		    <div class="form-message error" id="add-form-message"></div>
+		    <input type="submit" value="Add" class="btn add-submit-button" />
+		</form>
+	</div>
+</div>
+<div class="leftbar">
+	<div id="feedslist" class="feedslist">
+		{% include "feedslist.html" %}
+	</div>
+</div>
+<div class="content">
+	<div id="loading-content">
+		<h2>Loading...</h2>
+		<div id="spinner">
+			<div id="floatingCirclesG">
+				<div class="f_circleG" id="frotateG_01">
+				</div>
+				<div class="f_circleG" id="frotateG_02">
+				</div>
+				<div class="f_circleG" id="frotateG_03">
+				</div>
+				<div class="f_circleG" id="frotateG_04">
+				</div>
+				<div class="f_circleG" id="frotateG_05">
+				</div>
+				<div class="f_circleG" id="frotateG_06">
+				</div>
+				<div class="f_circleG" id="frotateG_07">
+				</div>
+				<div class="f_circleG" id="frotateG_08">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="feeditemslist"></div>
+</div>
 {% endblock %}

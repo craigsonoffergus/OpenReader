@@ -14,6 +14,8 @@ readerpatterns = patterns('',
     url(r'^$', 'openreader.views.index', name='index'),
     url(r'^reader/', 'openreader.views.reader', name='reader'),
     url(r'^readercontent/', 'openreader.views.reader_content', name='reader_content'),
+    url(r'^addfeed/', 'openreader.views.add_feed', name='add_feed'),
+    url(r'^removefeed/', 'openreader.views.remove_feed', name='remove_feed'),
 )
 
 urlpatterns = patterns('',

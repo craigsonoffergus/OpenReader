@@ -37,3 +37,278 @@ h3 {
 .index .content-bubble h1 {
 	margin-bottom:50px;
 }
+
+html.reader {
+	height:100%;
+}
+body.reader {
+	overflow:hidden;
+	height:100%;
+}
+.leftbar {
+	overflow:auto;
+	width:200px;
+	float:left;
+	height:100%;
+	padding-top:72px;
+}
+.content {
+	overflow:auto;
+	height:100%;
+}
+.add-area {
+	position: absolute;
+	top:0;
+	left:0;
+	margin: 20px 40px;
+	width:120px;
+}
+.add-button {
+	width:120px;
+}
+.popover {
+	padding:10px;
+}
+.popover.bottom {
+	top:100%;
+	margin-top:0;
+}
+#add-form-wrapper {
+	margin-top:5px;
+	width:500px;
+}
+#add-form-wrapper .close {
+	position:absolute;
+	top:2px;
+	right:10px;
+}
+#add-form-wrapper input[type="text"] {
+	width: 261px;
+}
+.add-submit-button {
+	position:absolute;
+	right:10px;
+	bottom:10px;
+}
+.form-message {
+	height:25px;
+	line-height:30px;
+	margin:5px;
+	font-size:14px;
+	color:rgb(173, 35, 35);
+}
+form {
+	margin:0;
+}
+label {
+	cursor:default;
+	font-size:12px;
+	font-color:#444;
+}
+input[type="text"] {
+	margin:0;
+	display:block;
+}
+
+.feed {
+	margin:5px 10px;
+	padding:3px 10px;
+	border-radius:10px;
+	cursor:pointer;
+	font-size:14px;
+	position:relative;
+}
+.feed:hover {
+	background-color:#FFF;
+}
+.feed-label {
+	overflow:hidden;
+	width:150px;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+.feed .close {
+	position:absolute;
+	top:3px;
+	right:10px;
+}
+
+
+#floatingCirclesG{
+position:relative;
+width:50px;
+height:50px;
+-moz-transform:scale(0.6);
+-webkit-transform:scale(0.6);
+-o-transform:scale(0.6);
+-ms-transform:scale(0.6);
+transform:scale(0.6);
+}
+
+.f_circleG{
+position:absolute;
+background-color:rgba(0,0,0,0);
+height:9px;
+width:9px;
+-moz-border-radius:5px;
+-moz-animation-name:f_fadeG;
+-moz-animation-duration:1.04s;
+-moz-animation-iteration-count:infinite;
+-moz-animation-direction:linear;
+-webkit-border-radius:5px;
+-webkit-animation-name:f_fadeG;
+-webkit-animation-duration:1.04s;
+-webkit-animation-iteration-count:infinite;
+-webkit-animation-direction:linear;
+-o-border-radius:5px;
+-o-animation-name:f_fadeG;
+-o-animation-duration:1.04s;
+-o-animation-iteration-count:infinite;
+-o-animation-direction:linear;
+-ms-border-radius:5px;
+-ms-animation-name:f_fadeG;
+-ms-animation-duration:1.04s;
+-ms-animation-iteration-count:infinite;
+-ms-animation-direction:linear;
+border-radius:5px;
+animation-name:f_fadeG;
+animation-duration:1.04s;
+animation-iteration-count:infinite;
+animation-direction:linear;
+}
+
+#frotateG_01{
+left:0;
+top:20px;
+-moz-animation-delay:0.39s;
+-webkit-animation-delay:0.39s;
+-o-animation-delay:0.39s;
+-ms-animation-delay:0.39s;
+animation-delay:0.39s;
+}
+
+#frotateG_02{
+left:6px;
+top:6px;
+-moz-animation-delay:0.52s;
+-webkit-animation-delay:0.52s;
+-o-animation-delay:0.52s;
+-ms-animation-delay:0.52s;
+animation-delay:0.52s;
+}
+
+#frotateG_03{
+left:20px;
+top:0;
+-moz-animation-delay:0.65s;
+-webkit-animation-delay:0.65s;
+-o-animation-delay:0.65s;
+-ms-animation-delay:0.65s;
+animation-delay:0.65s;
+}
+
+#frotateG_04{
+right:6px;
+top:6px;
+-moz-animation-delay:0.78s;
+-webkit-animation-delay:0.78s;
+-o-animation-delay:0.78s;
+-ms-animation-delay:0.78s;
+animation-delay:0.78s;
+}
+
+#frotateG_05{
+right:0;
+top:20px;
+-moz-animation-delay:0.91s;
+-webkit-animation-delay:0.91s;
+-o-animation-delay:0.91s;
+-ms-animation-delay:0.91s;
+animation-delay:0.91s;
+}
+
+#frotateG_06{
+right:6px;
+bottom:6px;
+-moz-animation-delay:1.04s;
+-webkit-animation-delay:1.04s;
+-o-animation-delay:1.04s;
+-ms-animation-delay:1.04s;
+animation-delay:1.04s;
+}
+
+#frotateG_07{
+left:20px;
+bottom:0;
+-moz-animation-delay:1.17s;
+-webkit-animation-delay:1.17s;
+-o-animation-delay:1.17s;
+-ms-animation-delay:1.17s;
+animation-delay:1.17s;
+}
+
+#frotateG_08{
+left:6px;
+bottom:6px;
+-moz-animation-delay:1.3s;
+-webkit-animation-delay:1.3s;
+-o-animation-delay:1.3s;
+-ms-animation-delay:1.3s;
+animation-delay:1.3s;
+}
+
+@-moz-keyframes f_fadeG{
+0%{
+background-color:#000000}
+
+100%{
+background-color:rgba(0,0,0,0)}
+
+}
+
+@-webkit-keyframes f_fadeG{
+0%{
+background-color:#000000}
+
+100%{
+background-color:rgba(0,0,0,0)}
+
+}
+
+@-o-keyframes f_fadeG{
+0%{
+background-color:#000000}
+
+100%{
+background-color:rgba(0,0,0,0)}
+
+}
+
+@-ms-keyframes f_fadeG{
+0%{
+background-color:#000000}
+
+100%{
+background-color:rgba(0,0,0,0)}
+
+}
+
+@keyframes f_fadeG{
+0%{
+background-color:#000000}
+
+100%{
+background-color:rgba(0,0,0,0)}
+
+}
+
+#loading-content h2 {
+	margin-top:100px;
+	text-align:center;
+	margin-bottom:0;
+}
+#spinner {
+	margin:20px auto;
+	display: block;
+	width: 50px;
+}
