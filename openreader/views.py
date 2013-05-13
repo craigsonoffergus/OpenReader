@@ -1,18 +1,24 @@
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseBadRequest
-
+from django.contrib.auth.views import logout as auth_logout
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 import json
 
 from openreader.forms import NewFeedForm
 from openreader.models import Feed, FeedItem
-from feed_reader import read_feed
+from openreader.feed_reader import read_feed
 
-reader_login_required = login_required(login_url='/reader/')
+
+def reader_login_required(f):
+    def wrap(request, *args, **kwargs):
+        return login_required(login_url=reverse("reader:openid-login"))(f)(request, *args, **kwargs)
+    wrap.__doc__=f.__doc__
+    wrap.__name__=f.__name__
+    return wrap
 
 
 def ajax_required(f):
@@ -36,17 +42,14 @@ def ajax_required(f):
 def index(request):
     if (request.user.is_authenticated()):
         return redirect(reverse("reader:reader"))
-    return render_to_response("index.html")
+    return render_to_response("openreader/index.html")
 
-def default_render_failure(request, message, status=403,
-                           template_name='',
-                           exception=None):
-    """Render an error page to the user."""
-    return redirect("/loginfailed/")
+def readerlogout(request):
+    return auth_logout(request, next_page = reverse('reader:index'))
 
 @reader_login_required
 def reader(request):
-    return render_to_response("reader.html", context_instance = RequestContext(request, 
+    return render_to_response("openreader/reader.html", context_instance = RequestContext(request, 
                                             dict(form = NewFeedForm(),
                                                  feeds = request.user.feeds.order_by("name").all())))
 
@@ -76,7 +79,7 @@ def add_feed(request):
         return HttpResponse(json.dumps(dict(message="Please enter a valid URL")))
         
     request.user.feeds.add(feed)
-    feedslist = render_to_string("feedslist.html", context_instance = RequestContext(request, 
+    feedslist = render_to_string("openreader/feedslist.html", context_instance = RequestContext(request, 
                                             dict(feeds = request.user.feeds.order_by("name").all())))
     return HttpResponse(json.dumps(dict(message="", feedslist = feedslist)))
 
@@ -89,6 +92,6 @@ def remove_feed(request):
     feed = Feed.objects.get(key = feed_key)
     request.user.feeds.remove(feed)
     
-    feedslist = render_to_string("feedslist.html", context_instance = RequestContext(request, 
+    feedslist = render_to_string("openreader/feedslist.html", context_instance = RequestContext(request, 
                                             dict(feeds = request.user.feeds.order_by("name").all())))
     return HttpResponse(json.dumps(dict(feedslist = feedslist)))

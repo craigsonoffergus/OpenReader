@@ -1,6 +1,7 @@
 localsettings.py
 .DS_Store
 */.DS_Store
+.settings
 
 *.py[cod]
 

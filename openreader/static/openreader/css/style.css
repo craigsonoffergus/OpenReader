@@ -131,8 +131,11 @@ input[type="text"] {
 	position:absolute;
 	top:3px;
 	right:10px;
+	display:none;
 }
-
+.feed:hover .close {
+	display:block;
+}
 
 #floatingCirclesG{
 position:relative;
