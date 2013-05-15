@@ -1,5 +1,12 @@
 READER = window.READER || {};
 
+READER.initializeFeedLink = function($el) {
+	$el.click(function(e) {
+		READER.loadContent($(this).data("feedkey"));
+		e.preventDefault();
+	});
+}
+
 READER.initializeFeedslist = function() {
 	$(".feed .close").click(function() {
 		$.ajax({
@@ -9,9 +16,15 @@ READER.initializeFeedslist = function() {
 		  success:function ( response ) {
 			  var data = JSON.parse(response);
 			  $("#feedslist").html(data.feedslist);
+			  
 			  READER.initializeFeedslist();
 		  }
 		});
+		e.stopPropogation();
+		e.preventDefault();
+	});
+	$("#feedslist .feed").each(function () {
+		READER.initializeFeedLink($(this));
 	});
 	READER.loadContent();
 }
@@ -21,12 +34,43 @@ READER.closeAddForm = function() {
 	$('#add-form-wrapper input[type="text"]').val('');
 }
 
-READER.loadContent = function() {
+READER.updateFeedUnreadCount = function($feed, count) {
+	$feed.data("unread-count", count);
+	if (count) {
+		$feed.find(".unread-feed-count").html(" ("+count+")");
+		$feed.addClass("has-unread");
+	}
+}
+
+READER.updateUnreadCounts = function() {
+	$.ajax({
+		  url: "/reader/unreadcounts/",
+		  type:"POST",
+		  success:function ( response ) {
+			  var data = JSON.parse(response);
+			  var itemcounts = data.feeditemcounts;
+			  $(".unread-feed-count").html("");
+			  $(".feed").removeClass("has-unread");
+			  var total = itemcounts.totalunread;
+			  READER.updateFeedUnreadCount($("#unread-feed"), total);
+			  delete itemcounts.totalunread;
+			  document.title = READER.PAGE_TITLE + " (" + total + ")";
+			  for (var key in itemcounts) {
+				  READER.updateFeedUnreadCount($('.feed[data-feedkey="'+key+'"]'), itemcounts[key]);
+			  }
+		  }
+	});
+}
+
+READER.loadContent = function(feedkey) {
+	READER.updateUnreadCounts();
+	
 	$('#feeditemslist').hide();
 	$("#loading-content").show();
 	
 	$.ajax({
 	  url: "/reader/readercontent/",
+	  data: {"feed_key": feedkey},
 	  success:function ( response ) {
 		  var data = JSON.parse(response);
 		  $("#feeditemslist").html("");
@@ -41,6 +85,10 @@ READER.loadContent = function() {
 }
 
 READER.initReader = function() {
+	
+	READER.PAGE_TITLE = document.title;
+	READER.initializeFeedLink($("#unread-feed"));
+	
 	$('body').click(function(e) {
 		if ($("#add-area").has($(e.target)).length) {
 			return;
@@ -50,8 +98,9 @@ READER.initReader = function() {
 	$('#add-form-wrapper .close').click(function(e) {
 		READER.closeAddForm();
 	})
-	$("#add-button").click(function() {
+	$("#add-button").click(function(e) {
 		$("#add-form-wrapper").fadeToggle(170);
+		e.preventDefault();
 	});
 	
 	$("#add-form").ajaxForm({success: function(responseText, statusText, xhr, $form) {
@@ -65,6 +114,10 @@ READER.initReader = function() {
 		}
 	}});
 	READER.initializeFeedslist();
+	
+	$(window).focus(function() {
+		READER.updateUnreadCounts();
+	});
 }
 
 $(document).ready(function () {

@@ -6,27 +6,12 @@
 
 
 {% block content %}
-<div class="add-area" id="add-area">
-	<button class="btn add-button btn-warning" id="add-button"><i class="icon-book icon-white"></i> Add Feed</button>
-	<div id="add-form-wrapper" class="popover bottom">
-		<button type="button" class="close">&times;</button>
-		<form id="add-form" action="{% url 'reader:add_feed' %}" method="post">
-			{% csrf_token %}
-			{% for hidden in form.hidden_fields %}
-			    {{ hidden }}
-		    {% endfor %}
-		    {% for field in form.visible_fields %}
-		        <div class="field-wrapper">
-		            {{ field.label_tag }}
-		            {{ field }}
-		        </div>
-		    {% endfor %}
-		    <div class="form-message error" id="add-form-message"></div>
-		    <input type="submit" value="Add" class="btn add-submit-button" />
-		</form>
-	</div>
-</div>
+{% include "openreader/topbar.html" %}
 <div class="leftbar">
+	<div class="feed all-feeds" id="unread-feed">
+		<div class="feed-label">All Unread<span class="unread-feed-count"></span></div>
+	</div>
+	<hr>
 	<div id="feedslist" class="feedslist">
 		{% include "openreader/feedslist.html" %}
 	</div>
@@ -57,4 +42,6 @@
 	</div>
 	<div id="feeditemslist"></div>
 </div>
+
+
 {% endblock %}

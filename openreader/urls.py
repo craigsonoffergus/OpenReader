@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^$', 'openreader.views.index', name='index'),
     url(r'^reader/', 'openreader.views.reader', name='reader'),
     url(r'^readercontent/', 'openreader.views.reader_content', name='reader_content'),
+    url(r'^unreadcounts/', 'openreader.views.get_unread_counts', name='get_unread_counts'),
     url(r'^addfeed/', 'openreader.views.add_feed', name='add_feed'),
     url(r'^removefeed/', 'openreader.views.remove_feed', name='remove_feed'),
     url(r'^completelogin/$', oauth_views.login_complete, name='openid-complete'),
@@ -26,7 +27,3 @@ urlpatterns = patterns('',
     url(r'^login', login_begin, name='openid-login'),
     url(r'^logout', 'openreader.views.readerlogout', name='logout'),
 )
-'''
-urlpatterns = patterns('',
-    url(r'^', include(readerpatterns,'','reader')),
-)'''

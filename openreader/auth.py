@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from openid.consumer.consumer import SUCCESS
-
+from django.conf import settings
 
 class GoogleBackend:
 
@@ -16,7 +16,14 @@ class GoogleBackend:
         try:
             user = User.objects.get(email=google_email)
         except User.DoesNotExist:
-            return None
+            if getattr(settings, 'OPENREADER_UNIVERSAL_LOGIN'):
+                user = User.objects.create_user(google_email, google_email,
+                                             'password')
+                user.save()
+                user = User.objects.get(username=google_email)
+                return user
+            else:
+                return None
 
         return user
 

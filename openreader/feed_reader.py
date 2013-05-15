@@ -1,4 +1,4 @@
-import urllib2, feedparser, datetime
+import urllib2, feedparser, datetime, traceback
 from time import mktime
 from openreader.models import FeedItem
 from django.utils.timezone import utc
@@ -53,13 +53,12 @@ def read_feed(feed):
                             title = entry['title'],
                             link = entry['link'],
                             content = entry['summary'],
-                            author = entry['author'],
+                            author = entry.get('author'),
                             date =  date)
             item.save()
     except urllib2.URLError:
         return False
-    except Exception, e:
-        print e
-        print "WHOOOPS"
+    except Exception:
+        traceback.print_exc()
         return False
     return True

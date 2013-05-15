@@ -1,0 +1,26 @@
+<div class="topbar">{% spaceless %}
+	<a href="{% url 'reader:index' %}">OpenReader</a>
+	<div class="add-area" id="add-area">
+		<a href="#" class="add-button" id="add-button"><i class="icon-book icon-white"></i> Add Feed</a>
+		<div id="add-form-wrapper" class="popover bottom">
+			<button type="button" class="close">&times;</button>
+			<form id="add-form" action="{% url 'reader:add_feed' %}" method="post">
+				{% csrf_token %}
+				{% for hidden in form.hidden_fields %}
+				    {{ hidden }}
+			    {% endfor %}
+			    {% for field in form.visible_fields %}
+			        <div class="field-wrapper">
+			            {{ field.label_tag }}
+			            {{ field }}
+			        </div>
+			    {% endfor %}
+			    <div class="form-message error" id="add-form-message"></div>
+			    <input type="submit" value="Add" class="btn add-submit-button" />
+			</form>
+		</div>
+	</div>
+	
+	
+	<a href="{% url 'reader:logout' %}" class="right">Log Out</a>
+{% endspaceless %}</div>

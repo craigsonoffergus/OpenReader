@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.views import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 import json
 
 from openreader.forms import NewFeedForm
@@ -53,12 +54,29 @@ def reader(request):
                                             dict(form = NewFeedForm(),
                                                  feeds = request.user.feeds.order_by("name").all())))
 
+@ajax_required
 @reader_login_required
 def reader_content(request):
-    my_feeds = request.user.feeds.all()
-    feeditems = FeedItem.objects.filter(feed__in = my_feeds).exclude(read_by_users__id = request.user.id).order_by("-date").all()
+    query = None
+    if request.GET.get("feed_key"):
+        query = FeedItem.objects.filter(feed__key = request.GET.get("feed_key"))
+    else:
+        my_feeds = request.user.feeds.all()
+        query = FeedItem.objects.filter(feed__in = my_feeds)
+    
+    feeditems = query.exclude(read_by_users__id = request.user.id).order_by("-date").select_related('feed').all()
     feeditemslist = [item.to_dict() for item in feeditems]
     return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist)))
+
+@ajax_required
+@reader_login_required
+def get_unread_counts(request):
+    my_feeds = request.user.feeds.all()
+    feeditems = FeedItem.objects.filter(feed__in = my_feeds).exclude(read_by_users__id = request.user.id).values('feed__key').annotate(Count('feed__key')).values_list('feed__key','feed__key__count')
+    feeditems_dict = dict(feeditems)
+    feeditems_dict["totalunread"] = sum(feeditems_dict.values())
+    return HttpResponse(json.dumps(dict(feeditemcounts = feeditems_dict)))
+
 
 @require_POST
 @ajax_required
@@ -79,6 +97,15 @@ def add_feed(request):
         return HttpResponse(json.dumps(dict(message="Please enter a valid URL")))
         
     request.user.feeds.add(feed)
+    
+    UserToFeedItem = request.user.read_feed_items.through
+    
+    old_feed_items = FeedItem.objects.filter(feed = feed).all()[10:]
+    read_flags = []
+    for item in old_feed_items:
+        read_flags.append(UserToFeedItem(user_id = request.user.id, feed_item_id = item.id))
+    UserToFeedItem.objects.bulk_create(read_flags)
+    
     feedslist = render_to_string("openreader/feedslist.html", context_instance = RequestContext(request, 
                                             dict(feeds = request.user.feeds.order_by("name").all())))
     return HttpResponse(json.dumps(dict(message="", feedslist = feedslist)))
@@ -91,6 +118,8 @@ def remove_feed(request):
     feed_key = request.POST['key']
     feed = Feed.objects.get(key = feed_key)
     request.user.feeds.remove(feed)
+    ReadItems = request.user.read_feed_items.through
+    ReadItems.objects.filter(user_id = request.user.id, feed_item__feed = feed).delete()
     
     feedslist = render_to_string("openreader/feedslist.html", context_instance = RequestContext(request, 
                                             dict(feeds = request.user.feeds.order_by("name").all())))
