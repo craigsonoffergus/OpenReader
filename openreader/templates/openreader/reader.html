@@ -9,7 +9,7 @@
 {% include "openreader/topbar.html" %}
 <div class="leftbar">
 	<div class="feed all-feeds" id="unread-feed">
-		<div class="feed-label">All Unread<span class="unread-feed-count"></span></div>
+		<div class="feed-label">All Items<span class="unread-feed-count"></span></div>
 	</div>
 	<hr>
 	<div id="feedslist" class="feedslist">
@@ -42,6 +42,18 @@
 	</div>
 	<div id="feeditemslist"></div>
 </div>
-
+<script type="text/html" id="item-template">
+	<div class="feed-item" data-feeditemkey="<%= key %>" data-feedkey="<%= feed %>">
+		<h3><a href="<%= link %>"><%= title %></a></h3>
+		<div class="item-info">from <%= feed_name %><% if (author) { %> by <%= author %><% } %></div>
+		<div class="item-date"><%= moment(date).format('dddd, MMMM D, YYYY') %></div>
+		<div class="item-content"><%= content %></div>
+	</div>
+</script>
+<div class="hidden">
+	<div class="feed-item no-items read" id="no-feed-items">
+		<h4>Looks like you have no unread items!</h4>
+	</div>
+</div>
 
 {% endblock %}

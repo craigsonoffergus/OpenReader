@@ -1,10 +1,12 @@
 {% extends "openreader/base.html" %}
+{% load staticfiles %}
 
 {% block bodyclass %}index{% endblock %}
 
 {% block content %}
 <div class="content-bubble">
 	<h1>The Open Reader</h1>
+	<img class="openreader-icon" src="{% static 'openreader/img/openreader.png' %}">
 	<a href="{% url 'reader:openid-login' %}" class="btn btn-large">Login Here</a>
 </div>
 {% endblock %}

@@ -53,7 +53,7 @@ def read_feed(feed):
                             title = entry['title'],
                             link = entry['link'],
                             content = entry['summary'],
-                            author = entry.get('author'),
+                            author = entry.get('author', ''),
                             date =  date)
             item.save()
     except urllib2.URLError:

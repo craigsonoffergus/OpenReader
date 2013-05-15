@@ -7,7 +7,7 @@ READER.initializeFeedLink = function($el) {
 	});
 }
 
-READER.initializeFeedslist = function() {
+READER.initializeFeedslist = function(feedkey) {
 	$(".feed .close").click(function() {
 		$.ajax({
 		  url: "/reader/removefeed/",
@@ -25,21 +25,30 @@ READER.initializeFeedslist = function() {
 	});
 	$("#feedslist .feed").each(function () {
 		READER.initializeFeedLink($(this));
+		if ($(this).data("feedkey") == feedkey) {
+			$(this).addClass("being-read");
+		}
 	});
-	READER.loadContent();
+	READER.loadContent(feedkey);
 }
 
 READER.closeAddForm = function() {
 	$("#add-form-wrapper").fadeOut(170);
-	$('#add-form-wrapper input[type="text"]').val('');
+	$('#add-form-wrapper input[type="text"]').val('').blur();
 }
 
 READER.updateFeedUnreadCount = function($feed, count) {
 	$feed.data("unread-count", count);
+	$feed.find(".unread-feed-count").html("");
+	$feed.removeClass("has-unread");
 	if (count) {
 		$feed.find(".unread-feed-count").html(" ("+count+")");
 		$feed.addClass("has-unread");
 	}
+}
+
+READER.setPageTitle = function(count) {
+	document.title = READER.PAGE_TITLE + (count ? " (" + count + ")" : "");
 }
 
 READER.updateUnreadCounts = function() {
@@ -54,7 +63,7 @@ READER.updateUnreadCounts = function() {
 			  var total = itemcounts.totalunread;
 			  READER.updateFeedUnreadCount($("#unread-feed"), total);
 			  delete itemcounts.totalunread;
-			  document.title = READER.PAGE_TITLE + " (" + total + ")";
+			  READER.setPageTitle(total);
 			  for (var key in itemcounts) {
 				  READER.updateFeedUnreadCount($('.feed[data-feedkey="'+key+'"]'), itemcounts[key]);
 			  }
@@ -64,23 +73,58 @@ READER.updateUnreadCounts = function() {
 
 READER.loadContent = function(feedkey) {
 	READER.updateUnreadCounts();
+	$('.feed').removeClass("being-read");
+	if (feedkey) {
+		$('.feed[data-feedkey="'+feedkey+'"]').addClass("being-read");
+	} else {
+		$('.all-feeds').addClass("being-read");
+	}
 	
 	$('#feeditemslist').hide();
 	$("#loading-content").show();
+	
+	var $dummy = jQuery('<div/>');
 	
 	$.ajax({
 	  url: "/reader/readercontent/",
 	  data: {"feed_key": feedkey},
 	  success:function ( response ) {
-		  var data = JSON.parse(response);
-		  $("#feeditemslist").html("");
-		  for (var i = 0; i < data.feeditemslist.length; i++) {
-			  var feeditem = data.feeditemslist[i];
-			  $("#feeditemslist").append(feeditem.content);
-		  }
+			var data = JSON.parse(response);
+			$("#feeditemslist").html("");
+			for (var i = 0; i < data.feeditemslist.length; i++) {
+				var feeditem = data.feeditemslist[i];
+				$dummy.html(READER.itemTemplate(feeditem));
+				$dummy.find('a').attr('target', '_blank');
+				$("#feeditemslist").append($dummy.html());
+			}
+			if (! data.feeditemslist.length) {
+				$("#feeditemslist").append($("#no-feed-items").clone());
+			}
 			$("#loading-content").hide();
 			$('#feeditemslist').show();
+			$('.feed-item').click(function() {
+				READER.readItem($(this));
+			});
 	  }
+	});
+}
+
+READER.readItem = function($item) {
+	if ($item.hasClass("read")) {
+		return;
+	}
+	var total = Math.max($("#unread-feed").data("unread-count") - 1,0);
+	READER.updateFeedUnreadCount($("#unread-feed"), total);
+	READER.setPageTitle(total);
+	var $feed = $('.feed[data-feedkey="'+$item.data("feedkey")+'"]');
+	var feedTotal = Math.max($feed.data("unread-count") - 1, 0);
+	READER.updateFeedUnreadCount($feed, feedTotal);
+	$item.addClass("read");
+	
+	$.ajax({
+		  url: "/reader/readitem/",
+		  data: {"item_key": $item.data("feeditemkey")},
+		  type: "POST"
 	});
 }
 
@@ -88,6 +132,7 @@ READER.initReader = function() {
 	
 	READER.PAGE_TITLE = document.title;
 	READER.initializeFeedLink($("#unread-feed"));
+	READER.itemTemplate = _.template($("#item-template").html());
 	
 	$('body').click(function(e) {
 		if ($("#add-area").has($(e.target)).length) {
@@ -100,6 +145,7 @@ READER.initReader = function() {
 	})
 	$("#add-button").click(function(e) {
 		$("#add-form-wrapper").fadeToggle(170);
+		// TODO: focus field on show. blur on hide. 
 		e.preventDefault();
 	});
 	
@@ -109,7 +155,7 @@ READER.initReader = function() {
 			$("#add-form-message").html(result.message);
 		} else {
 			$("#feedslist").html(result.feedslist);
-			READER.initializeFeedslist();
+			READER.initializeFeedslist(result.feedkey);
 			READER.closeAddForm();
 		}
 	}});
@@ -117,6 +163,15 @@ READER.initReader = function() {
 	
 	$(window).focus(function() {
 		READER.updateUnreadCounts();
+	});
+	setInterval(READER.updateUnreadCounts, 30 * 60 * 1000);
+	
+	$('.content').scroll(function() {
+		$(".feed-item").each(function() {
+			if ($(this).offset().top + $(this).height() - $('.content').height() < 0) {
+				READER.readItem($(this));
+			}
+		});
 	});
 }
 
