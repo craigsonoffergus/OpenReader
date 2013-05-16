@@ -37,6 +37,9 @@ class Feed(Base):
     feed_etag = models.CharField(max_length=256, blank = True)
     users = models.ManyToManyField(User, related_name="feeds")
 
+    def __unicode__(self):
+        return u"{0} ({1})".format(self.name, self.key)
+
 class ReadFeedItem(models.Model):
     user = models.ForeignKey(User)
     feed_item = models.ForeignKey('FeedItem')
@@ -48,7 +51,7 @@ class FeedItem(Base):
     content = models.TextField()
     date = models.DateTimeField()
     author = models.CharField(max_length=64)
-    remote_feed_id = models.CharField(max_length=50)
+    remote_feed_id = models.CharField(max_length=256)
     read_by_users = models.ManyToManyField(User, through=ReadFeedItem, related_name="read_feed_items")
     
     def to_dict(self):
@@ -60,3 +63,6 @@ class FeedItem(Base):
                     feed = self.feed.key, 
                     feed_name = self.feed.name, 
                     key = self.key)
+    
+    def __unicode__(self):
+        return u"{0} ({1})".format(self.title, self.key)
