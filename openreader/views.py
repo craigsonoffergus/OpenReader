@@ -65,7 +65,7 @@ def reader_content(request):
         my_feeds = request.user.feeds.all()
         query = FeedItem.objects.filter(feed__in = my_feeds)
     
-    feeditems = query.exclude(read_by_users__id = request.user.id).order_by("-date").select_related('feed').all()
+    feeditems = query.exclude(read_by_users__id = request.user.id).order_by("date").select_related('feed').all()
     feeditemslist = [item.to_dict() for item in feeditems]
     return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist)))
 
