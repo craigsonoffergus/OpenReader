@@ -35,6 +35,7 @@ READER.initializeFeedslist = function(feedkey) {
 READER.closeAddForm = function() {
 	$("#add-form-wrapper").fadeOut(170);
 	$('#add-form-wrapper input[type="text"]').val('').blur();
+	$("#add-form-message").html("");
 	$("#add-form-wrapper").removeClass("shown");
 }
 
@@ -157,6 +158,7 @@ READER.initReader = function() {
 	
 	$("#add-form").ajaxForm({success: function(responseText, statusText, xhr, $form) {
 		var result = JSON.parse(responseText);
+		$("#add-form-message").html("");
 		if (result.message) {
 			$("#add-form-message").html(result.message);
 		} else {

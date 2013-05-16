@@ -45,14 +45,14 @@ def read_feed(feed):
         feed.save()
         
         for entry in parsed['entries']:
-            if FeedItem.objects.filter(feed = feed, remote_feed_id = entry['id']).count():
+            if entry.get('id') and FeedItem.objects.filter(feed = feed, remote_feed_id = entry['id']).count():
                 continue
             date = datetime.datetime.fromtimestamp(mktime(entry['published_parsed'])).replace(tzinfo=utc)
             item = FeedItem(feed = feed,
-                            remote_feed_id = entry['id'],
-                            title = entry['title'],
-                            link = entry['link'],
-                            content = entry['summary'],
+                            remote_feed_id = entry.get('id',''),
+                            title = entry.get('title',''),
+                            link = entry.get('link',''),
+                            content = entry.get('summary',''),
                             author = entry.get('author', ''),
                             date =  date)
             item.save()
