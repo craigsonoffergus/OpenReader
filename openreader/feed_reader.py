@@ -25,6 +25,7 @@ def read_feed(feed):
  
     try:
         opener = urllib2.build_opener(NotModifiedHandler())
+        opener.addheaders = [('User-agent', 'Mozilla/5.0')] # shhhh
         url_handle = opener.open(req)
          
         if hasattr(url_handle, 'code') and url_handle.code == 304:
@@ -57,6 +58,7 @@ def read_feed(feed):
                             date =  date)
             item.save()
     except urllib2.URLError:
+        traceback.print_exc()
         return False
     except Exception:
         traceback.print_exc()
