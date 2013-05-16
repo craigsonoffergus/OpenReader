@@ -35,6 +35,7 @@ READER.initializeFeedslist = function(feedkey) {
 READER.closeAddForm = function() {
 	$("#add-form-wrapper").fadeOut(170);
 	$('#add-form-wrapper input[type="text"]').val('').blur();
+	$("#add-form-wrapper").removeClass("shown");
 }
 
 READER.updateFeedUnreadCount = function($feed, count) {
@@ -144,8 +145,13 @@ READER.initReader = function() {
 		READER.closeAddForm();
 	})
 	$("#add-button").click(function(e) {
-		$("#add-form-wrapper").fadeToggle(170);
-		// TODO: focus field on show. blur on hide. 
+		if($("#add-form-wrapper").hasClass("shown")) {
+			READER.closeAddForm();
+		} else {
+			$("#add-form-wrapper").fadeIn(170);
+			$("#add-form-wrapper").addClass("shown");
+			$("#add-form-wrapper input[type='text']").focus();
+		}
 		e.preventDefault();
 	});
 	
