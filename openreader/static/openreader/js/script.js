@@ -74,6 +74,10 @@ READER.updateUnreadCounts = function() {
 }
 
 READER.loadContent = function(feedkey, showRead, offset) {
+	if (READER.IS_LOADING) {
+		return;
+	}
+	READER.IS_LOADING = true;
 	READER.updateUnreadCounts();
 	$('.feed').removeClass("being-read");
 	if (feedkey) {
@@ -127,16 +131,17 @@ READER.loadContent = function(feedkey, showRead, offset) {
 			}
 			$("#loading-content").hide();
 			$('#feeditemslist').show();
-			$('.feed-item').click(function() {
+			$('.feed-item').not(".javascripted").click(function() {
 				READER.readItem($(this));
-			});
+			}).addClass("javascripted");
+			READER.IS_LOADING = false;
 	  }
 	});
 }
 
 READER.checkToLoadMore = function() {
 	var $loading = $("#feeditemslist .loading-feed-items");
-	if (! $loading.length) {
+	if (! $loading.length || READER.IS_LOADING) {
 		return;
 	}
 	if ($loading.offset().top < $('.content').height() + 40) {
