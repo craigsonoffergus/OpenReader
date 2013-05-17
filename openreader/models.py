@@ -55,6 +55,7 @@ class FeedItem(Base):
     read_by_users = models.ManyToManyField(User, through=ReadFeedItem, related_name="read_feed_items")
     
     def to_dict(self, read_feeds = None):
+        
         result = dict(title = self.title, 
                     link = self.link, 
                     content = self.content, 

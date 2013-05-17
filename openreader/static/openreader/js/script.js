@@ -194,17 +194,25 @@ READER.initReader = function() {
 		e.preventDefault();
 	});
 	
-	$("#add-form").ajaxForm({success: function(responseText, statusText, xhr, $form) {
-		var result = JSON.parse(responseText);
-		$("#add-form-message").html("");
-		if (result.message) {
-			$("#add-form-message").html(result.message);
-		} else {
-			$("#feedslist").html(result.feedslist);
-			READER.initializeFeedslist(result.feedkey);
-			READER.closeAddForm();
+	$("#add-form").ajaxForm({
+		beforeSubmit: function(arr, $form, options) { 
+			$("#add-form .add-submit-button").css("display","none");
+			$("#add-form .add-form-spinner").css("display","block");
+		},
+		success: function(responseText, statusText, xhr, $form) {
+			var result = JSON.parse(responseText);
+			$("#add-form-message").html("");
+			if (result.message) {
+				$("#add-form-message").html(result.message);
+			} else {
+				$("#feedslist").html(result.feedslist);
+				READER.initializeFeedslist(result.feedkey);
+				READER.closeAddForm();
+			}
+			$("#add-form .add-submit-button").css("display","block");
+			$("#add-form .add-form-spinner").css("display","none");
 		}
-	}});
+	});
 	READER.initializeFeedslist();
 	
 	$(window).focus(function() {

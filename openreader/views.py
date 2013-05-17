@@ -121,14 +121,15 @@ def add_feed(request):
 
     if not read_feed(feed):
         return HttpResponse(json.dumps(dict(message="Please enter a valid URL")))
-        
-    request.user.feeds.add(feed)
     
-    old_feed_items = FeedItem.objects.filter(feed = feed).all()[10:]
-    read_flags = []
-    for item in old_feed_items:
-        read_flags.append(ReadFeedItem(user = request.user, feed_item = item))
-    ReadFeedItem.objects.bulk_create(read_flags)
+    if not feed in request.user.feeds.all():
+        request.user.feeds.add(feed)
+        
+        old_feed_items = FeedItem.objects.filter(feed = feed).all()[10:]
+        read_flags = []
+        for item in old_feed_items:
+            read_flags.append(ReadFeedItem(user = request.user, feed_item = item))
+        ReadFeedItem.objects.bulk_create(read_flags)
     
     feedslist = render_to_string("openreader/feedslist.html", context_instance = RequestContext(request, 
                                             dict(feeds = request.user.feeds.order_by("name").all())))

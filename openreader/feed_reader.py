@@ -2,6 +2,7 @@ import urllib2, feedparser, datetime, traceback
 from time import mktime
 from openreader.models import FeedItem
 from django.utils.timezone import utc
+import re
 
 class NotModifiedHandler(urllib2.BaseHandler):
   
@@ -50,10 +51,13 @@ def read_feed(feed):
             if remote_id and FeedItem.objects.filter(feed = feed, remote_feed_id = remote_id).count():
                 continue
             date = datetime.datetime.fromtimestamp(mktime(entry['published_parsed'])).replace(tzinfo=utc)
+            link = entry.get('link','')
+            if not re.match(r'http(s?)://', link) and re.match(r'http(s?)://', remote_id):
+                link = remote_id
             item = FeedItem(feed = feed,
                             remote_feed_id = remote_id,
                             title = entry.get('title',''),
-                            link = entry.get('link',''),
+                            link = link,
                             content = entry.get('summary',''),
                             author = entry.get('author', ''),
                             date =  date)
