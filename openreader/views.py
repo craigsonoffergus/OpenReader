@@ -58,16 +58,31 @@ def reader(request):
 @ajax_required
 @reader_login_required
 def reader_content(request):
+    
+    show_read = not not request.GET.get("show_read")
+    offset = int(request.GET.get("offset",0))
+    
     query = None
     if request.GET.get("feed_key"):
         query = FeedItem.objects.filter(feed__key = request.GET.get("feed_key"))
     else:
         my_feeds = request.user.feeds.all()
         query = FeedItem.objects.filter(feed__in = my_feeds)
+        
+    if show_read:
+        query = query.order_by("-date")
+    else:
+        query = query.exclude(read_by_users__id = request.user.id).order_by("date")
     
-    feeditems = query.exclude(read_by_users__id = request.user.id).order_by("date").select_related('feed').all()
-    feeditemslist = [item.to_dict() for item in feeditems]
-    return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist)))
+    count = query.count()
+    has_more = count > offset+10
+    
+    feeditems = query.select_related('feed').all()
+    feeditems = feeditems[offset:offset+10]
+    
+    read_items = request.user.read_feed_items.all()
+    feeditemslist = [item.to_dict(read_items) for item in feeditems]
+    return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist, has_more = has_more, next_offset = offset + 10)))
 
 @ajax_required
 @reader_login_required
@@ -84,8 +99,9 @@ def get_unread_counts(request):
 def read_item(request):
     item_key = request.POST.get("item_key")
     item = FeedItem.objects.get(key = item_key)
-    read_tag = ReadFeedItem(user = request.user, feed_item = item)
-    read_tag.save()
+    if not ReadFeedItem.objects.filter(user = request.user, feed_item = item).count():
+        read_tag = ReadFeedItem(user = request.user, feed_item = item)
+        read_tag.save()
     return HttpResponse("")
 
 @require_POST

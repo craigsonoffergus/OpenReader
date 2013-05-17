@@ -54,15 +54,20 @@ class FeedItem(Base):
     remote_feed_id = models.CharField(max_length=256)
     read_by_users = models.ManyToManyField(User, through=ReadFeedItem, related_name="read_feed_items")
     
-    def to_dict(self):
-        return dict(title = self.title, 
+    def to_dict(self, read_feeds = None):
+        result = dict(title = self.title, 
                     link = self.link, 
                     content = self.content, 
                     author = self.author, 
                     date = self.date.isoformat(), 
                     feed = self.feed.key, 
                     feed_name = self.feed.name, 
-                    key = self.key)
+                    key = self.key,
+                    been_read = False)
+        if read_feeds:
+            if self in read_feeds:
+                result['been_read'] = True
+        return result
     
     def __unicode__(self):
         return u"{0} ({1})".format(self.title, self.key)

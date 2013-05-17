@@ -399,3 +399,57 @@ background-color:rgba(0,0,0,0)}
 .feed-item.no-items {
 	text-align:center;
 }
+
+.loading-ellipsis .one {
+    opacity: 0;
+    -webkit-animation: dot1 1.3s infinite;
+    animation: dot1 1.3s infinite;
+}
+
+.loading-ellipsis .two {
+    opacity: 0;
+    -webkit-animation: dot2 1.3s infinite;
+    animation: dot2 1.3s infinite;
+}
+
+.loading-ellipsis .three {
+    opacity: 0;
+    -webkit-animation: dot3 1.3s infinite;
+    animation: dot3 1.3s infinite;
+}
+
+@keyframes dot1 {
+      0% { opacity: 0; }
+     25% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes dot1 {
+      0% { opacity: 0; }
+     25% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@keyframes dot2 {
+      0% { opacity: 0; }
+     50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes dot2 {
+      0% { opacity: 0; }
+     50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@keyframes dot3 {
+      0% { opacity: 0; }
+     75% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes dot3 {
+      0% { opacity: 0; }
+     75% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.show-read-items {
+	margin-top:15px;
+	display: inline-block;
+}

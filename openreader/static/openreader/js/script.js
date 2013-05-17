@@ -73,7 +73,7 @@ READER.updateUnreadCounts = function() {
 	});
 }
 
-READER.loadContent = function(feedkey) {
+READER.loadContent = function(feedkey, showRead, offset) {
 	READER.updateUnreadCounts();
 	$('.feed').removeClass("being-read");
 	if (feedkey) {
@@ -81,18 +81,25 @@ READER.loadContent = function(feedkey) {
 	} else {
 		$('.all-feeds').addClass("being-read");
 	}
-	
-	$('#feeditemslist').hide();
-	$("#loading-content").show();
+	if (! offset) {
+		$('#feeditemslist').hide();
+		$("#loading-content").show();
+	}
 	
 	var $dummy = jQuery('<div/>');
-	
+	if (!offset) {
+		offset = 0;
+	}
 	$.ajax({
 	  url: "/reader/readercontent/",
-	  data: {"feed_key": feedkey},
+	  data: {"feed_key": feedkey, "show_read": showRead ? "1" : "", "offset": offset},
 	  success:function ( response ) {
 			var data = JSON.parse(response);
-			$("#feeditemslist").html("");
+			if (offset) {
+				$("#feeditemslist .loading-feed-items").remove();
+			} else {
+				$("#feeditemslist").html("");
+			}
 			for (var i = 0; i < data.feeditemslist.length; i++) {
 				var feeditem = data.feeditemslist[i];
 				$dummy.html(READER.itemTemplate(feeditem));
@@ -100,7 +107,23 @@ READER.loadContent = function(feedkey) {
 				$("#feeditemslist").append($dummy.html());
 			}
 			if (! data.feeditemslist.length) {
-				$("#feeditemslist").append($("#no-feed-items").clone());
+				if (! offset) {
+					$("#feeditemslist").append($("#no-feed-items").clone());
+					var $showUnread = $("#feeditemslist .show-read-items");
+					$showUnread.click(function(e) {
+						setTimeout(READER.loadContent(feedkey, true), 5);
+						e.preventDefault();
+					})
+				}
+			} else {
+				if (data.has_more) {
+					var $loading = $("#loading-feed-items").clone();
+					$("#feeditemslist").append($loading);
+					$loading.data("feedkey", feedkey);
+					$loading.data("showRead", showRead);
+					$loading.data("offset", data.next_offset);
+					READER.checkToLoadMore();
+				}
 			}
 			$("#loading-content").hide();
 			$('#feeditemslist').show();
@@ -109,6 +132,16 @@ READER.loadContent = function(feedkey) {
 			});
 	  }
 	});
+}
+
+READER.checkToLoadMore = function() {
+	var $loading = $("#feeditemslist .loading-feed-items");
+	if (! $loading.length) {
+		return;
+	}
+	if ($loading.offset().top < $('.content').height() + 40) {
+		READER.loadContent($loading.data("feedkey"), $loading.data("showRead"), $loading.data("offset"));
+	}
 }
 
 READER.readItem = function($item) {
@@ -180,6 +213,7 @@ READER.initReader = function() {
 				READER.readItem($(this));
 			}
 		});
+		READER.checkToLoadMore();
 	});
 }
 

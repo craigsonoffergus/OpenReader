@@ -43,16 +43,23 @@
 	<div id="feeditemslist"></div>
 </div>
 <script type="text/html" id="item-template">
-	<div class="feed-item" data-feeditemkey="<%= key %>" data-feedkey="<%= feed %>">
+	<div class="feed-item <% if (been_read) { %>read<% } %>" data-feeditemkey="<%= key %>" data-feedkey="<%= feed %>">
 		<h3><a href="<%= link %>"><%= title %></a></h3>
 		<div class="item-info">from <%= feed_name %><% if (author) { %> by <%= author %><% } %></div>
 		<div class="item-date"><%= moment(date).format('dddd, MMMM D, YYYY') %></div>
 		<div class="item-content"><%= content %></div>
+		<div class="clearfix"></div>
 	</div>
 </script>
 <div class="hidden">
 	<div class="feed-item no-items read" id="no-feed-items">
 		<h4>Looks like you have no unread items!</h4>
+		<a href="#" class="show-read-items" id="show-read-items">Show me the items I've read, then</a>
+	</div>
+</div>
+<div class="hidden">
+	<div class="feed-item no-items read loading-feed-items" id="loading-feed-items">
+		<h4>Loading<span class="loading-ellipsis"><span class="one">.</span><span class="two">.</span><span class="three">.</span></span></h4>
 	</div>
 </div>
 
