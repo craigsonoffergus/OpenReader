@@ -1,6 +1,6 @@
 {% for feed in feeds %}
 	<div class="feed" data-feedkey="{{ feed.key }}">
 		<div class="feed-label">{{ feed.name }}<span class="unread-feed-count"></span></div>
-		<button type="button" class="close">&times;</button>
+		<button type="button" class="close"><span>&times;</span></button>
 	</div>
 {% endfor %}

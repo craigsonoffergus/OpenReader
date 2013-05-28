@@ -94,11 +94,13 @@ def get_unread_counts(request):
 @reader_login_required
 def read_item(request):
     item_key = request.POST.get("item_key")
-    item = FeedItem.objects.get(key = item_key)
+    item = FeedItem.objects.select_related('feed').get(key = item_key)
     if not ReadFeedItem.objects.filter(user = request.user, feed_item = item).count():
         read_tag = ReadFeedItem(user = request.user, feed_item = item)
         read_tag.save()
-    return HttpResponse("")
+    
+    feeditemscount = FeedItem.objects.filter(feed = item.feed).exclude(read_by_users__id = request.user.id).count()
+    return HttpResponse(json.dumps(dict(feeditemscount = feeditemscount)))
 
 @require_POST
 @ajax_required
