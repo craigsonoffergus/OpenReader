@@ -1,4 +1,5 @@
 READER = window.READER || {};
+READER.feeditemslist = [];
 
 READER.initializeFeedLink = function($el) {
 	$el.click(function(e) {
@@ -73,7 +74,37 @@ READER.updateUnreadCounts = function() {
 	});
 }
 
-READER.loadContent = function(feedkey, showRead, offset) {
+READER.showNextItems = function(feedkey, showRead) {
+	var $dummy = jQuery('<div/>');
+	var numToRead = Math.min(10, READER.feeditemslist.length);
+	for (var i = 0; i < numToRead; i++) {
+		var feeditem = READER.feeditemslist[i];
+		$dummy.html(READER.itemTemplate(feeditem));
+		$dummy.find('a').attr('target', '_blank');
+		$("#feeditemslist").append($dummy.html());
+	}
+	READER.feeditemslist = READER.feeditemslist.slice(numToRead);
+	
+	if (!numToRead) {
+		READER.updateUnreadCounts();
+	}
+	
+	if (READER.feeditemslist.length) {
+		var $loading = $("#loading-feed-items").clone();
+		$("#feeditemslist").append($loading);
+		$loading.data("feedkey", feedkey);
+		$loading.data("showRead", showRead);
+		READER.checkToLoadMore();
+	}
+	$("#loading-content").hide();
+	$('#feeditemslist').show();
+	$('.feed-item').not(".javascripted").click(function() {
+		READER.readItem($(this));
+	}).addClass("javascripted");
+	
+}
+
+READER.loadContent = function(feedkey, showRead) {
 	if (READER.IS_LOADING) {
 		return;
 	}
@@ -85,33 +116,17 @@ READER.loadContent = function(feedkey, showRead, offset) {
 	} else {
 		$('.all-feeds').addClass("being-read");
 	}
-	if (! offset) {
+	
+	if (! READER.feeditemslist.length) {
 		$('#feeditemslist').hide();
 		$("#loading-content").show();
-	}
-	
-	var $dummy = jQuery('<div/>');
-	if (!offset) {
-		offset = 0;
-	}
-	$.ajax({
-	  url: "/reader/readercontent/",
-	  data: {"feed_key": feedkey, "show_read": showRead ? "1" : "", "offset": offset},
-	  success:function ( response ) {
-			var data = JSON.parse(response);
-			if (offset) {
-				$("#feeditemslist .loading-feed-items").remove();
-			} else {
+		$.ajax({
+		  url: "/reader/readercontent/",
+		  data: {"feed_key": feedkey, "show_read": showRead ? "1" : ""},
+		  success:function ( response ) {
+				var data = JSON.parse(response);
 				$("#feeditemslist").html("");
-			}
-			for (var i = 0; i < data.feeditemslist.length; i++) {
-				var feeditem = data.feeditemslist[i];
-				$dummy.html(READER.itemTemplate(feeditem));
-				$dummy.find('a').attr('target', '_blank');
-				$("#feeditemslist").append($dummy.html());
-			}
-			if (! data.feeditemslist.length) {
-				if (! offset) {
+				if (! data.feeditemslist.length) {
 					$("#feeditemslist").append($("#no-feed-items").clone());
 					var $showUnread = $("#feeditemslist .show-read-items");
 					$showUnread.click(function(e) {
@@ -119,33 +134,29 @@ READER.loadContent = function(feedkey, showRead, offset) {
 						e.preventDefault();
 					})
 				}
-			} else {
-				if (data.has_more) {
-					var $loading = $("#loading-feed-items").clone();
-					$("#feeditemslist").append($loading);
-					$loading.data("feedkey", feedkey);
-					$loading.data("showRead", showRead);
-					$loading.data("offset", data.next_offset);
-					READER.checkToLoadMore();
-				}
-			}
-			$("#loading-content").hide();
-			$('#feeditemslist').show();
-			$('.feed-item').not(".javascripted").click(function() {
-				READER.readItem($(this));
-			}).addClass("javascripted");
-			READER.IS_LOADING = false;
-	  }
-	});
+				READER.feeditemslist = data.feeditemslist;
+				READER.showNextItems(feedkey, showRead);
+				READER.IS_LOADING = false;
+		  }
+		});
+	} else {
+		$("#feeditemslist .loading-feed-items").remove();
+		READER.showNextItems(feedkey, showRead);
+		
+		READER.IS_LOADING = false;
+	}
 }
 
 READER.checkToLoadMore = function() {
 	var $loading = $("#feeditemslist .loading-feed-items");
 	if (! $loading.length || READER.IS_LOADING) {
+		if (! $("#feeditemslist .feed-item").not(".read").length ) {
+			READER.updateUnreadCounts();
+		}
 		return;
 	}
 	if ($loading.offset().top < $('.content').height() + 40) {
-		READER.loadContent($loading.data("feedkey"), $loading.data("showRead"), $loading.data("offset"));
+		READER.loadContent($loading.data("feedkey"), $loading.data("showRead"));
 	}
 }
 
@@ -153,6 +164,7 @@ READER.readItem = function($item) {
 	if ($item.hasClass("read")) {
 		return;
 	}
+	
 	var total = Math.max($("#unread-feed").data("unread-count") - 1,0);
 	READER.updateFeedUnreadCount($("#unread-feed"), total);
 	READER.setPageTitle(total);
@@ -218,7 +230,7 @@ READER.initReader = function() {
 	$(window).focus(function() {
 		READER.updateUnreadCounts();
 	});
-	setInterval(READER.updateUnreadCounts, 30 * 60 * 1000);
+	setInterval(READER.updateUnreadCounts, 15 * 60 * 1000);
 	
 	$('.content').scroll(function() {
 		$(".feed-item").each(function() {

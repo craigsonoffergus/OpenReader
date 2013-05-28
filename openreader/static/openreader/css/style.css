@@ -134,15 +134,18 @@ input[type="text"] {
 }
 .feed-label {
 	overflow:hidden;
-	width:190px;
+	width:175px;
 	text-overflow:ellipsis;
 	white-space: nowrap;
 }
 .feed .close {
 	position:absolute;
-	top:3px;
-	right:10px;
+	top:6px;
+	right:5px;
 	display:none;
+	line-height:20px;
+	height:20px;
+	width:20px;
 }
 .feed:hover .close {
 	display:block;

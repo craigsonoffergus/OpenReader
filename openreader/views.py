@@ -60,7 +60,6 @@ def reader(request):
 def reader_content(request):
     
     show_read = not not request.GET.get("show_read")
-    offset = int(request.GET.get("offset",0))
     
     query = None
     if request.GET.get("feed_key"):
@@ -74,15 +73,12 @@ def reader_content(request):
     else:
         query = query.exclude(read_by_users__id = request.user.id).order_by("date")
     
-    count = query.count()
-    has_more = count > offset+10
-    
     feeditems = query.select_related('feed').all()
-    feeditems = feeditems[offset:offset+10]
     
     read_items = request.user.read_feed_items.all()
     feeditemslist = [item.to_dict(read_items) for item in feeditems]
-    return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist, has_more = has_more, next_offset = offset + 10)))
+    
+    return HttpResponse(json.dumps(dict(feeditemslist = feeditemslist)))
 
 @ajax_required
 @reader_login_required
