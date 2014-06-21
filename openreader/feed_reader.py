@@ -59,6 +59,6 @@ def read_feed(feed):
                             date =  date)
             item.save()
     except Exception:
-        traceback.print_exc()
+        logging.getLogger('django').error(traceback.format_exc())
         return False
     return True
