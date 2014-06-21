@@ -14,14 +14,14 @@ class Migration(SchemaMigration):
             ('key', self.gf('django.db.models.fields.CharField')(unique=True, max_length=7)),
             ('date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('date_updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('url', self.gf('django.db.models.fields.CharField')(unique=True, max_length=256)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
+            ('url', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('link', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
             ('last_read', self.gf('django.db.models.fields.DateTimeField')()),
             ('regular_update_time', self.gf('django.db.models.fields.TimeField')(null=True, blank=True)),
-            ('feed_last_modified', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
-            ('feed_etag', self.gf('django.db.models.fields.CharField')(max_length=256, blank=True)),
+            ('feed_last_modified', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('feed_etag', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
         ))
         db.send_create_signal(u'openreader', ['Feed'])
 
@@ -48,11 +48,12 @@ class Migration(SchemaMigration):
             ('date_created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('date_updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('feed', self.gf('django.db.models.fields.related.ForeignKey')(related_name='items', to=orm['openreader.Feed'])),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('link', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('link', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('content', self.gf('django.db.models.fields.TextField')()),
             ('date', self.gf('django.db.models.fields.DateTimeField')()),
-            ('remote_feed_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('author', self.gf('django.db.models.fields.CharField')(max_length=64)),
+            ('remote_feed_id', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
         db.send_create_signal(u'openreader', ['FeedItem'])
 
@@ -90,7 +91,7 @@ class Migration(SchemaMigration):
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -98,7 +99,7 @@ class Migration(SchemaMigration):
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         u'contenttypes.contenttype': {
@@ -112,20 +113,21 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Feed'},
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'date_updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'feed_etag': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'feed_last_modified': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'feed_etag': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'feed_last_modified': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '7'}),
             'last_read': ('django.db.models.fields.DateTimeField', [], {}),
-            'link': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'blank': 'True'}),
+            'link': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'regular_update_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
-            'url': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '256'}),
+            'url': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'users': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'feeds'", 'symmetrical': 'False', 'to': u"orm['auth.User']"})
         },
         u'openreader.feeditem': {
             'Meta': {'object_name': 'FeedItem'},
+            'author': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'content': ('django.db.models.fields.TextField', [], {}),
             'date': ('django.db.models.fields.DateTimeField', [], {}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -133,10 +135,10 @@ class Migration(SchemaMigration):
             'feed': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'items'", 'to': u"orm['openreader.Feed']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '7'}),
-            'link': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'link': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'read_by_users': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'read_feed_items'", 'symmetrical': 'False', 'through': u"orm['openreader.ReadFeedItem']", 'to': u"orm['auth.User']"}),
-            'remote_feed_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+            'remote_feed_id': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'openreader.readfeeditem': {
             'Meta': {'object_name': 'ReadFeedItem'},

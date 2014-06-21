@@ -27,14 +27,14 @@ class Base(models.Model):
 
 
 class Feed(Base):
-    url = models.CharField(max_length=256, blank = False, unique = True)
-    name = models.CharField(max_length=256, blank = True)
-    link = models.CharField(max_length=256, blank = True)
-    description = models.CharField(max_length=256, blank = True)
+    url = models.CharField(max_length=255, blank = False, unique = True)
+    name = models.CharField(max_length=255, blank = True)
+    link = models.CharField(max_length=255, blank = True)
+    description = models.CharField(max_length=255, blank = True)
     last_read = models.DateTimeField()
     regular_update_time = models.TimeField(null = True, blank = True)
-    feed_last_modified = models.CharField(max_length=256, blank = True)
-    feed_etag = models.CharField(max_length=256, blank = True)
+    feed_last_modified = models.CharField(max_length=255, blank = True)
+    feed_etag = models.CharField(max_length=255, blank = True)
     users = models.ManyToManyField(User, related_name="feeds")
 
     def __unicode__(self):
@@ -46,12 +46,12 @@ class ReadFeedItem(models.Model):
 
 class FeedItem(Base):
     feed = models.ForeignKey(Feed, related_name="items")
-    title = models.CharField(max_length=256)
-    link = models.CharField(max_length=256)
+    title = models.CharField(max_length=255)
+    link = models.CharField(max_length=255)
     content = models.TextField()
     date = models.DateTimeField()
     author = models.CharField(max_length=64)
-    remote_feed_id = models.CharField(max_length=256)
+    remote_feed_id = models.CharField(max_length=255)
     read_by_users = models.ManyToManyField(User, through=ReadFeedItem, related_name="read_feed_items")
     
     def to_dict(self, read_feeds = None):

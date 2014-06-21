@@ -16,7 +16,7 @@ from openreader.feed_reader import read_feed
 
 def reader_login_required(f):
     def wrap(request, *args, **kwargs):
-        return login_required(login_url=reverse("reader:openid-login"))(f)(request, *args, **kwargs)
+        return login_required(login_url=reverse("social:begin",kwargs=dict(backend="google")))(f)(request, *args, **kwargs)
     wrap.__doc__=f.__doc__
     wrap.__name__=f.__name__
     return wrap
