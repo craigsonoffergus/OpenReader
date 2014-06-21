@@ -41,9 +41,9 @@ def read_feed(feed):
         content = response.text
         parsed = feedparser.parse(content)
         
-        feed.name = parsed['feed']['title']
+        feed.name = parsed['feed']['title'][:255]
         feed.description = parsed['feed']['subtitle'][:255]
-        feed.link = parsed['feed']['link']
+        feed.link = parsed['feed']['link'][:255]
         feed.last_read = datetime.datetime.now().replace(tzinfo=utc)
         feed.save()
         
@@ -57,8 +57,8 @@ def read_feed(feed):
                 link = remote_id
             item = FeedItem(feed = feed,
                             remote_feed_id = remote_id,
-                            title = entry.get('title',''),
-                            link = link,
+                            title = entry.get('title','')[:255],
+                            link = link[:255],
                             content = entry.get('summary',''),
                             author = entry.get('author', ''),
                             date =  date)
