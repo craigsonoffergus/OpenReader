@@ -20,9 +20,9 @@ def read_feed(feed):
         headers["If-Modified-Since"] = last_modified
     
     try:
-        logging.info("Getting Feed: " + url)
+        logging.getLogger('django').error("Getting Feed: " + url)
         response = requests.get(url, headers=headers)
-        logging.info("Feed Done")
+        logging.getLogger('django').error("Feed Done")
         
         if response.status_code == 304:
             # not modified!
@@ -39,7 +39,7 @@ def read_feed(feed):
         feed.description = parsed['feed']['subtitle'][:255]
         feed.link = parsed['feed']['link'][:255]
         feed.last_read = datetime.datetime.now().replace(tzinfo=utc)
-        logging.info(feed.name)
+        logging.getLogger('django').error(feed.name)
         feed.save()
         
         for entry in parsed['entries']:
