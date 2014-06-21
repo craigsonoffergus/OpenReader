@@ -3,15 +3,7 @@ from time import mktime
 from openreader.models import FeedItem
 from django.utils.timezone import utc
 import re
-
-'''
-class NotModifiedHandler(urllib2.BaseHandler):
-  
-    def http_error_304(self, req, fp, code, message, headers):
-        addinfourl = urllib2.addinfourl(fp, headers, req.get_full_url())
-        addinfourl.code = code
-        return addinfourl
-'''
+import logging
 
 def read_feed(feed):
     
@@ -28,8 +20,10 @@ def read_feed(feed):
         headers["If-Modified-Since"] = last_modified
     
     try:
+        logging.info("Getting Feed: " + url)
         response = requests.get(url, headers=headers)
-         
+        logging.info("Feed Done")
+        
         if response.status_code == 304:
             # not modified!
             return True
@@ -45,6 +39,7 @@ def read_feed(feed):
         feed.description = parsed['feed']['subtitle'][:255]
         feed.link = parsed['feed']['link'][:255]
         feed.last_read = datetime.datetime.now().replace(tzinfo=utc)
+        logging.info(feed.name)
         feed.save()
         
         for entry in parsed['entries']:
