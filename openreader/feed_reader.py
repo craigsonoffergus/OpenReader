@@ -21,7 +21,7 @@ def read_feed(feed):
     
     try:
         logging.getLogger('django').error("Getting Feed: " + url)
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout = 1)
         logging.getLogger('django').error("Feed Done")
         
         if response.status_code == 304:
