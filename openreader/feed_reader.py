@@ -42,7 +42,7 @@ def read_feed(feed):
         parsed = feedparser.parse(content)
         
         feed.name = parsed['feed']['title']
-        feed.description = parsed['feed']['subtitle']
+        feed.description = parsed['feed']['subtitle'][:255]
         feed.link = parsed['feed']['link']
         feed.last_read = datetime.datetime.now().replace(tzinfo=utc)
         feed.save()
