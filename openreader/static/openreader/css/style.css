@@ -576,3 +576,7 @@ margin-left:0px;
 	margin-top:15px;
 	display: inline-block;
 }
+
+.hidden {
+	display:none;
+}
