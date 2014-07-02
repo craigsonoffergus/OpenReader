@@ -40,11 +40,15 @@ def read_feed(feed):
         logging.getLogger('django').error(feed.name)
         feed.save()
         
+        now = datetime.datetime.now()
         for entry in parsed['entries']:
             remote_id = entry.get('id') or entry.get('guid') or entry.get("link",'') or entry.get("published",'')
             if remote_id and FeedItem.objects.filter(feed = feed, remote_feed_id = remote_id).count():
                 continue
-            date = datetime.datetime.fromtimestamp(mktime(entry['published_parsed'])).replace(tzinfo=utc)
+            if entry.get('published_parsed'):
+                date = datetime.datetime.fromtimestamp(mktime(entry['published_parsed'])).replace(tzinfo=utc)
+            else:
+                date = now
             link = entry.get('link','')
             if not re.match(r'http(s?)://', link) and re.match(r'http(s?)://', remote_id):
                 link = remote_id
